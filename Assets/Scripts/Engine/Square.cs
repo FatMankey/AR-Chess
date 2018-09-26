@@ -1,16 +1,16 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿namespace ChessEngine.Engine
+{
+    public struct Square
+    {
+        public Piece Piece;
 
-public class Square : MonoBehaviour {
+        #region Constructors
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+         public Square(Piece piece)
+        {
+            Piece = new Piece(piece);
+        }
+
+        #endregion
+    }
 }
