@@ -1,12 +1,17 @@
-﻿namespace ChessEngine.Engine
+﻿using UnityEngine;
+namespace ChessEngine.Engine
 {
-    public struct Square
+    public class Square : MonoBehaviour
     {
         public Piece Piece;
 
+        public Square()
+        {
+        }
+
         #region Constructors
 
-         public Square(Piece piece)
+        public Square(Piece piece)
         {
             Piece = new Piece(piece);
         }
