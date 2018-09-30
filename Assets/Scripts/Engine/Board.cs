@@ -1,19 +1,18 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
-using System;
 
 namespace ChessEngine.Engine
 {
     public class Board : MonoBehaviour
     {
-
         public Square[] Squares;
         public int Score;
         public bool InsufficientMaterial;
         public ulong ZobristHash;
+
         //Game Over Flags
         public bool BlackCheck;
+
         public bool BlackMate;
         public bool WhiteCheck;
         public bool WhiteMate;
@@ -29,16 +28,15 @@ namespace ChessEngine.Engine
 
         public MoveContent LastMove;
 
-        //Who initated En Passant
+        //Who initiated En Passant
         public ChessPieceColor EnPassantColor;
+
         //Positions liable to En Passant
-       public byte EnPassantPosition;
+        public byte EnPassantPosition;
 
         public ChessPieceColor WhoseMove;
 
-         public int MoveCount;
-
-
+        public int MoveCount;
 
         #region Constructors
 
@@ -96,7 +94,6 @@ namespace ChessEngine.Engine
                 EnPassantPosition = 47;
             }
 
-
             if (fen.Contains("a6"))
             {
                 EnPassantColor = ChessPieceColor.White;
@@ -140,7 +137,6 @@ namespace ChessEngine.Engine
 
             foreach (char c in fen)
             {
-
                 if (index < 64 && spc == 0)
                 {
                     if (c == '1' && index < 63)
@@ -258,179 +254,190 @@ namespace ChessEngine.Engine
                 }
                 else
                 {
-                    if (c == 'w')
+                    switch (c)
                     {
-                        WhoseMove = ChessPieceColor.White;
-                    }
-                    else if (c == 'b')
-                    {
-                        WhoseMove = ChessPieceColor.Black;
-                    }
-                    else if (c == 'K')
-                    {
-                        if (Squares[60].Piece != null)
-                        {
-                            if (Squares[60].Piece.PieceType == ChessPieceType.King)
+                        case 'w':
+                            WhoseMove = ChessPieceColor.White;
+                            break;
+
+                        case 'b':
+                            WhoseMove = ChessPieceColor.Black;
+                            break;
+
+                        case 'K':
                             {
-                                Squares[60].Piece.Moved = false;
-                            }
-                        }
+                                if (Squares[60].Piece != null)
+                                {
+                                    if (Squares[60].Piece.PieceType == ChessPieceType.King)
+                                    {
+                                        Squares[60].Piece.Moved = false;
+                                    }
+                                }
 
-                        if (Squares[63].Piece != null)
-                        {
-                            if (Squares[63].Piece.PieceType == ChessPieceType.Rook)
+                                if (Squares[63].Piece != null)
+                                {
+                                    if (Squares[63].Piece.PieceType == ChessPieceType.Rook)
+                                    {
+                                        Squares[63].Piece.Moved = false;
+                                    }
+                                }
+
+                                WhiteCastled = false;
+                                break;
+                            }
+                        case 'Q':
                             {
-                                Squares[63].Piece.Moved = false;
-                            }
-                        }
+                                if (Squares[60].Piece != null)
+                                {
+                                    if (Squares[60].Piece.PieceType == ChessPieceType.King)
+                                    {
+                                        Squares[60].Piece.Moved = false;
+                                    }
+                                }
 
-                        WhiteCastled = false;
-                    }
-                    else if (c == 'Q')
-                    {
-                        if (Squares[60].Piece != null)
-                        {
-                            if (Squares[60].Piece.PieceType == ChessPieceType.King)
+                                if (Squares[56].Piece != null)
+                                {
+                                    if (Squares[56].Piece.PieceType == ChessPieceType.Rook)
+                                    {
+                                        Squares[56].Piece.Moved = false;
+                                    }
+                                }
+
+                                WhiteCastled = false;
+                                break;
+                            }
+                        case 'k':
                             {
-                                Squares[60].Piece.Moved = false;
-                            }
-                        }
+                                if (Squares[4].Piece != null)
+                                {
+                                    if (Squares[4].Piece.PieceType == ChessPieceType.King)
+                                    {
+                                        Squares[4].Piece.Moved = false;
+                                    }
+                                }
 
-                        if (Squares[56].Piece != null)
-                        {
-                            if (Squares[56].Piece.PieceType == ChessPieceType.Rook)
+                                if (Squares[7].Piece != null)
+                                {
+                                    if (Squares[7].Piece.PieceType == ChessPieceType.Rook)
+                                    {
+                                        Squares[7].Piece.Moved = false;
+                                    }
+                                }
+
+                                BlackCastled = false;
+                                break;
+                            }
+                        case 'q':
                             {
-                                Squares[56].Piece.Moved = false;
-                            }
-                        }
+                                if (Squares[4].Piece != null)
+                                {
+                                    if (Squares[4].Piece.PieceType == ChessPieceType.King)
+                                    {
+                                        Squares[4].Piece.Moved = false;
+                                    }
+                                }
 
-                        WhiteCastled = false;
-                    }
-                    else if (c == 'k')
-                    {
-                        if (Squares[4].Piece != null)
-                        {
-                            if (Squares[4].Piece.PieceType == ChessPieceType.King)
+                                if (Squares[0].Piece != null)
+                                {
+                                    if (Squares[0].Piece.PieceType == ChessPieceType.Rook)
+                                    {
+                                        Squares[0].Piece.Moved = false;
+                                    }
+                                }
+
+                                BlackCastled = false;
+                                break;
+                            }
+                        case ' ':
+                            spacers++;
+                            break;
+
+                        default:
                             {
-                                Squares[4].Piece.Moved = false;
+                                if (c == '1' && spacers == 4)
+                                {
+                                    FiftyMove = (byte)((FiftyMove * 10) + 1);
+                                }
+                                else if (c == '2' && spacers == 4)
+                                {
+                                    FiftyMove = (byte)((FiftyMove * 10) + 2);
+                                }
+                                else if (c == '3' && spacers == 4)
+                                {
+                                    FiftyMove = (byte)((FiftyMove * 10) + 3);
+                                }
+                                else if (c == '4' && spacers == 4)
+                                {
+                                    FiftyMove = (byte)((FiftyMove * 10) + 4);
+                                }
+                                else if (c == '5' && spacers == 4)
+                                {
+                                    FiftyMove = (byte)((FiftyMove * 10) + 5);
+                                }
+                                else if (c == '6' && spacers == 4)
+                                {
+                                    FiftyMove = (byte)((FiftyMove * 10) + 6);
+                                }
+                                else if (c == '7' && spacers == 4)
+                                {
+                                    FiftyMove = (byte)((FiftyMove * 10) + 7);
+                                }
+                                else if (c == '8' && spacers == 4)
+                                {
+                                    FiftyMove = (byte)((FiftyMove * 10) + 8);
+                                }
+                                else if (c == '9' && spacers == 4)
+                                {
+                                    FiftyMove = (byte)((FiftyMove * 10) + 9);
+                                }
+                                else if (c == '0' && spacers == 4)
+                                {
+                                    MoveCount = (byte)((MoveCount * 10) + 0);
+                                }
+                                else if (c == '1' && spacers == 5)
+                                {
+                                    MoveCount = (byte)((MoveCount * 10) + 1);
+                                }
+                                else if (c == '2' && spacers == 5)
+                                {
+                                    MoveCount = (byte)((MoveCount * 10) + 2);
+                                }
+                                else if (c == '3' && spacers == 5)
+                                {
+                                    MoveCount = (byte)((MoveCount * 10) + 3);
+                                }
+                                else if (c == '4' && spacers == 5)
+                                {
+                                    MoveCount = (byte)((MoveCount * 10) + 4);
+                                }
+                                else if (c == '5' && spacers == 5)
+                                {
+                                    MoveCount = (byte)((MoveCount * 10) + 5);
+                                }
+                                else if (c == '6' && spacers == 5)
+                                {
+                                    MoveCount = (byte)((MoveCount * 10) + 6);
+                                }
+                                else if (c == '7' && spacers == 5)
+                                {
+                                    MoveCount = (byte)((MoveCount * 10) + 7);
+                                }
+                                else if (c == '8' && spacers == 5)
+                                {
+                                    MoveCount = (byte)((MoveCount * 10) + 8);
+                                }
+                                else if (c == '9' && spacers == 5)
+                                {
+                                    MoveCount = (byte)((MoveCount * 10) + 9);
+                                }
+                                else if (c == '0' && spacers == 5)
+                                {
+                                    MoveCount = (byte)((MoveCount * 10) + 0);
+                                }
+
+                                break;
                             }
-                        }
-
-                        if (Squares[7].Piece != null)
-                        {
-                            if (Squares[7].Piece.PieceType == ChessPieceType.Rook)
-                            {
-                                Squares[7].Piece.Moved = false;
-                            }
-                        }
-
-                        BlackCastled = false;
                     }
-                    else if (c == 'q')
-                    {
-                        if (Squares[4].Piece != null)
-                        {
-                            if (Squares[4].Piece.PieceType == ChessPieceType.King)
-                            {
-                                Squares[4].Piece.Moved = false;
-                            }
-                        }
-
-                        if (Squares[0].Piece != null)
-                        {
-                            if (Squares[0].Piece.PieceType == ChessPieceType.Rook)
-                            {
-                                Squares[0].Piece.Moved = false;
-                            }
-                        }
-
-                        BlackCastled = false;
-                    }
-                    else if (c == ' ')
-                    {
-                        spacers++;
-                    }
-                    else if (c == '1' && spacers == 4)
-                    {
-                        FiftyMove = (byte)((FiftyMove * 10) + 1);
-                    }
-                    else if (c == '2' && spacers == 4)
-                    {
-                        FiftyMove = (byte)((FiftyMove * 10) + 2);
-                    }
-                    else if (c == '3' && spacers == 4)
-                    {
-                        FiftyMove = (byte)((FiftyMove * 10) + 3);
-                    }
-                    else if (c == '4' && spacers == 4)
-                    {
-                        FiftyMove = (byte)((FiftyMove * 10) + 4);
-                    }
-                    else if (c == '5' && spacers == 4)
-                    {
-                        FiftyMove = (byte)((FiftyMove * 10) + 5);
-                    }
-                    else if (c == '6' && spacers == 4)
-                    {
-                        FiftyMove = (byte)((FiftyMove * 10) + 6);
-                    }
-                    else if (c == '7' && spacers == 4)
-                    {
-                        FiftyMove = (byte)((FiftyMove * 10) + 7);
-                    }
-                    else if (c == '8' && spacers == 4)
-                    {
-                        FiftyMove = (byte)((FiftyMove * 10) + 8);
-                    }
-                    else if (c == '9' && spacers == 4)
-                    {
-                        FiftyMove = (byte)((FiftyMove * 10) + 9);
-                    }
-                    else if (c == '0' && spacers == 4)
-                    {
-                        MoveCount = (byte)((MoveCount * 10) + 0);
-                    }
-                    else if (c == '1' && spacers == 5)
-                    {
-                        MoveCount = (byte)((MoveCount * 10) + 1);
-                    }
-                    else if (c == '2' && spacers == 5)
-                    {
-                        MoveCount = (byte)((MoveCount * 10) + 2);
-                    }
-                    else if (c == '3' && spacers == 5)
-                    {
-                        MoveCount = (byte)((MoveCount * 10) + 3);
-                    }
-                    else if (c == '4' && spacers == 5)
-                    {
-                        MoveCount = (byte)((MoveCount * 10) + 4);
-                    }
-                    else if (c == '5' && spacers == 5)
-                    {
-                        MoveCount = (byte)((MoveCount * 10) + 5);
-                    }
-                    else if (c == '6' && spacers == 5)
-                    {
-                        MoveCount = (byte)((MoveCount * 10) + 6);
-                    }
-                    else if (c == '7' && spacers == 5)
-                    {
-                        MoveCount = (byte)((MoveCount * 10) + 7);
-                    }
-                    else if (c == '8' && spacers == 5)
-                    {
-                        MoveCount = (byte)((MoveCount * 10) + 8);
-                    }
-                    else if (c == '9' && spacers == 5)
-                    {
-                        MoveCount = (byte)((MoveCount * 10) + 9);
-                    }
-                    else if (c == '0' && spacers == 5)
-                    {
-                        MoveCount = (byte)((MoveCount * 10) + 0);
-                    }
-
                 }
             }
         }
@@ -504,7 +511,7 @@ namespace ChessEngine.Engine
             MoveCount = board.MoveCount;
         }
 
-        #endregion
+        #endregion Constructors
 
         #region PrivateMethods
 
@@ -530,52 +537,42 @@ namespace ChessEngine.Engine
         private static void RecordEnPassant(ChessPieceColor pcColor, ChessPieceType pcType, Board board, byte srcPosition, byte dstPosition)
         {
             //Record En Passant if Pawn Moving
-            if (pcType == ChessPieceType.Pawn)
-            {
-                //Reset FiftyMoveCount if pawn moved
-                board.FiftyMove = 0;
+            if (pcType != ChessPieceType.Pawn) return;
+            //Reset FiftyMoveCount if pawn moved
+            board.FiftyMove = 0;
 
-                int difference = srcPosition - dstPosition;
+            int difference = srcPosition - dstPosition;
 
-                if (difference == 16 || difference == -16)
-                {
-                    board.EnPassantPosition = (byte)(dstPosition + (difference / 2));
-                    board.EnPassantColor = pcColor;
-                }
-            }
+            if (difference != 16 && difference != -16) return;
+            board.EnPassantPosition = (byte)(dstPosition + (difference / 2));
+            board.EnPassantColor = pcColor;
         }
 
         private static bool SetEnpassantMove(Board board, byte dstPosition, ChessPieceColor pcColor)
         {
             //En Passant
-            if (board.EnPassantPosition == dstPosition)
+            if (board.EnPassantPosition != dstPosition) return false;
+            //We have an En Passant Possible
+            if (pcColor == board.EnPassantColor) return false;
+            int pieceLocationOffset = 8;
+
+            if (board.EnPassantColor == ChessPieceColor.White)
             {
-                //We have an En Passant Possible
-                if (pcColor != board.EnPassantColor)
-                {
-                    int pieceLocationOffset = 8;
-
-                    if (board.EnPassantColor == ChessPieceColor.White)
-                    {
-                        pieceLocationOffset = -8;
-                    }
-
-                    dstPosition = (byte)(dstPosition + pieceLocationOffset);
-
-                    Square sqr = board.Squares[dstPosition];
-
-                    board.LastMove.TakenPiece = new PieceTaken(sqr.Piece.PieceColor, sqr.Piece.PieceType, sqr.Piece.Moved, dstPosition);
-
-                    board.Squares[dstPosition].Piece = null;
-
-                    //Reset FiftyMoveCount if capture
-                    board.FiftyMove = 0;
-
-                    return true;
-                }
+                pieceLocationOffset = -8;
             }
 
-            return false;
+            dstPosition = (byte)(dstPosition + pieceLocationOffset);
+
+            Square sqr = board.Squares[dstPosition];
+
+            board.LastMove.TakenPiece = new PieceTaken(sqr.Piece.PieceColor, sqr.Piece.PieceType, sqr.Piece.Moved, dstPosition);
+
+            board.Squares[dstPosition].Piece = null;
+
+            //Reset FiftyMoveCount if capture
+            board.FiftyMove = 0;
+
+            return true;
         }
 
         private static void KingCastle(Board board, Piece piece, byte srcPosition, byte dstPosition)
@@ -592,29 +589,25 @@ namespace ChessEngine.Engine
                 if (dstPosition == 62)
                 {
                     //Ok we are casteling we need to move the Rook
-                    if (board.Squares[63].Piece != null)
-                    {
-                        board.Squares[61].Piece = board.Squares[63].Piece;
-                        board.Squares[63].Piece = null;
-                        board.WhiteCastled = true;
-                        board.LastMove.MovingPieceSecondary = new PieceMoving(board.Squares[61].Piece.PieceColor, board.Squares[61].Piece.PieceType, board.Squares[61].Piece.Moved, 63, 61);
-                        board.Squares[61].Piece.Moved = true;
-                        return;
-                    }
+                    if (board.Squares[63].Piece == null) return;
+                    board.Squares[61].Piece = board.Squares[63].Piece;
+                    board.Squares[63].Piece = null;
+                    board.WhiteCastled = true;
+                    board.LastMove.MovingPieceSecondary = new PieceMoving(board.Squares[61].Piece.PieceColor, board.Squares[61].Piece.PieceType, board.Squares[61].Piece.Moved, 63, 61);
+                    board.Squares[61].Piece.Moved = true;
+                    return;
                 }
                 //Castle Left
                 else if (dstPosition == 58)
                 {
                     //Ok we are casteling we need to move the Rook
-                    if (board.Squares[56].Piece != null)
-                    {
-                        board.Squares[59].Piece = board.Squares[56].Piece;
-                        board.Squares[56].Piece = null;
-                        board.WhiteCastled = true;
-                        board.LastMove.MovingPieceSecondary = new PieceMoving(board.Squares[59].Piece.PieceColor, board.Squares[59].Piece.PieceType, board.Squares[59].Piece.Moved, 56, 59);
-                        board.Squares[59].Piece.Moved = true;
-                        return;
-                    }
+                    if (board.Squares[56].Piece == null) return;
+                    board.Squares[59].Piece = board.Squares[56].Piece;
+                    board.Squares[56].Piece = null;
+                    board.WhiteCastled = true;
+                    board.LastMove.MovingPieceSecondary = new PieceMoving(board.Squares[59].Piece.PieceColor, board.Squares[59].Piece.PieceType, board.Squares[59].Piece.Moved, 56, 59);
+                    board.Squares[59].Piece.Moved = true;
+                    return;
                 }
             }
             else if (piece.PieceColor == ChessPieceColor.Black && srcPosition == 4)
@@ -622,51 +615,49 @@ namespace ChessEngine.Engine
                 if (dstPosition == 6)
                 {
                     //Ok we are casteling we need to move the Rook
-                    if (board.Squares[7].Piece != null)
-                    {
-                        board.Squares[5].Piece = board.Squares[7].Piece;
-                        board.Squares[7].Piece = null;
-                        board.BlackCastled = true;
-                        board.LastMove.MovingPieceSecondary = new PieceMoving(board.Squares[5].Piece.PieceColor, board.Squares[5].Piece.PieceType, board.Squares[5].Piece.Moved, 7, 5);
-                        board.Squares[5].Piece.Moved = true;
-                        return;
-                    }
+                    if (board.Squares[7].Piece == null) return;
+                    board.Squares[5].Piece = board.Squares[7].Piece;
+                    board.Squares[7].Piece = null;
+                    board.BlackCastled = true;
+                    board.LastMove.MovingPieceSecondary = new PieceMoving(board.Squares[5].Piece.PieceColor, board.Squares[5].Piece.PieceType, board.Squares[5].Piece.Moved, 7, 5);
+                    board.Squares[5].Piece.Moved = true;
+                    return;
                 }
                 //Castle Left
                 else if (dstPosition == 2)
                 {
                     //Ok we are casteling we need to move the Rook
-                    if (board.Squares[0].Piece != null)
-                    {
-                        board.Squares[3].Piece = board.Squares[0].Piece;
-                        board.Squares[0].Piece = null;
-                        board.BlackCastled = true;
-                        board.LastMove.MovingPieceSecondary = new PieceMoving(board.Squares[3].Piece.PieceColor, board.Squares[3].Piece.PieceType, board.Squares[3].Piece.Moved, 0, 3);
-                        board.Squares[3].Piece.Moved = true;
-                        return;
-                    }
+                    if (board.Squares[0].Piece == null) return;
+                    board.Squares[3].Piece = board.Squares[0].Piece;
+                    board.Squares[0].Piece = null;
+                    board.BlackCastled = true;
+                    board.LastMove.MovingPieceSecondary = new PieceMoving(board.Squares[3].Piece.PieceColor, board.Squares[3].Piece.PieceType, board.Squares[3].Piece.Moved, 0, 3);
+                    board.Squares[3].Piece.Moved = true;
+                    return;
                 }
             }
 
             return;
         }
 
-        #endregion
+        #endregion PrivateMethods
 
         #region InternalMethods
 
         //Fast Copy
         internal Board FastCopy()
         {
-            Board clonedBoard = new Board(Squares);
+            Board clonedBoard = new Board(Squares)
+            {
+                EndGamePhase = EndGamePhase,
+                WhoseMove = WhoseMove,
+                MoveCount = MoveCount,
+                FiftyMove = FiftyMove,
+                ZobristHash = ZobristHash,
+                BlackCastled = BlackCastled,
+                WhiteCastled = WhiteCastled
+            };
 
-            clonedBoard.EndGamePhase = EndGamePhase;
-            clonedBoard.WhoseMove = WhoseMove;
-            clonedBoard.MoveCount = MoveCount;
-            clonedBoard.FiftyMove = FiftyMove;
-            clonedBoard.ZobristHash = ZobristHash;
-            clonedBoard.BlackCastled = BlackCastled;
-            clonedBoard.WhiteCastled = WhiteCastled;
             return clonedBoard;
         }
 
@@ -705,7 +696,6 @@ namespace ChessEngine.Engine
                 {
                     board.LastMove.TakenPiece = new PieceTaken(ChessPieceColor.White, ChessPieceType.None, false,
                                                                dstPosition);
-
                 }
             }
 
@@ -733,15 +723,8 @@ namespace ChessEngine.Engine
 
             KingCastle(board, piece, srcPosition, dstPosition);
 
-            //Promote Pawns 
-            if (PromotePawns(board, piece, dstPosition, promoteToPiece))
-            {
-                board.LastMove.PawnPromoted = true;
-            }
-            else
-            {
-                board.LastMove.PawnPromoted = false;
-            }
+            //Promote Pawns
+            board.LastMove.PawnPromoted = PromotePawns(board, piece, dstPosition, promoteToPiece);
 
             if (board.FiftyMove >= 50)
             {
@@ -757,26 +740,34 @@ namespace ChessEngine.Engine
             {
                 case 0:
                     return "a";
+
                 case 1:
                     return "b";
+
                 case 2:
                     return "c";
+
                 case 3:
                     return "d";
+
                 case 4:
                     return "e";
+
                 case 5:
                     return "f";
+
                 case 6:
                     return "g";
+
                 case 7:
                     return "h";
+
                 default:
                     return "a";
             }
         }
 
-         static string Fen(bool boardOnly, Board board)
+        private static string Fen(bool boardOnly, Board board)
         {
             string output = String.Empty;
             byte blankSquares = 0;
@@ -807,20 +798,18 @@ namespace ChessEngine.Engine
                     blankSquares++;
                 }
 
-                if (x % 8 == 7)
+                if (x % 8 != 7) continue;
+                if (blankSquares > 0)
                 {
-                    if (blankSquares > 0)
+                    output += blankSquares.ToString();
+                    output += "/";
+                    blankSquares = 0;
+                }
+                else
+                {
+                    if (x > 0 && x != 63)
                     {
-                        output += blankSquares.ToString();
                         output += "/";
-                        blankSquares = 0;
-                    }
-                    else
-                    {
-                        if (x > 0 && x != 63)
-                        {
-                            output += "/";
-                        }
                     }
                 }
             }
@@ -886,15 +875,12 @@ namespace ChessEngine.Engine
                         }
                     }
                 }
-
-
             }
 
             if (output.EndsWith("/"))
             {
-                output.TrimEnd('/');
+                output = output.TrimEnd('/');
             }
-
 
             if (board.EnPassantPosition != 0)
             {
@@ -905,14 +891,12 @@ namespace ChessEngine.Engine
                 output += spacer + "- ";
             }
 
-            if (!boardOnly)
-            {
-                output += board.FiftyMove + " ";
-                output += board.MoveCount + 1;
-            }
+            if (boardOnly) return output.Trim();
+            output += board.FiftyMove + " ";
+            output += board.MoveCount + 1;
             return output.Trim();
         }
 
-        #endregion
+        #endregion InternalMethods
     }
 }

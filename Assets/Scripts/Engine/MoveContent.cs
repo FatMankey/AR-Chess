@@ -1,7 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
-
 
 namespace ChessEngine.Engine
 {
@@ -66,6 +64,7 @@ namespace ChessEngine.Engine
             Moved = false;
         }
     }
+
     public class MoveContent : MonoBehaviour
     {
         public bool EnPassantOccured;
@@ -109,15 +108,14 @@ namespace ChessEngine.Engine
 
             foreach (char c in move)
             {
-                if (c == '{')
+                switch (c)
                 {
-                    comment = true;
-                    continue;
-                }
-                if (c == '}')
-                {
-                    comment = false;
-                    continue;
+                    case '{':
+                        comment = true;
+                        continue;
+                    case '}':
+                        comment = false;
+                        continue;
                 }
 
                 if (comment)
@@ -144,23 +142,22 @@ namespace ChessEngine.Engine
                     srcCol = GetIntFromColumn(c);
                     continue;
                 }
-                if (srcCol >= 0)
+                //invert if statement as other way seemed redundant
+                if (srcCol < 0) continue;
+                int srcRow = int.Parse(c.ToString());
+
+                if (srcFound)
                 {
-                    int srcRow = int.Parse(c.ToString());
-
-                    if (!srcFound)
-                    {
-                        MovingPiecePrimary.SrcPosition = GetBoardIndex(srcCol, 8 - srcRow);
-                        srcFound = true;
-                    }
-                    else
-                    {
-                        MovingPiecePrimary.DstPosition = GetBoardIndex(srcCol, 8 - srcRow);
-                    }
-
-                    srcCol = -1;
-                    continue;
+                    MovingPiecePrimary.DstPosition = GetBoardIndex(srcCol, 8 - srcRow);
                 }
+                else
+                {
+                    MovingPiecePrimary.SrcPosition = GetBoardIndex(srcCol, 8 - srcRow);
+                    srcFound = true;
+                }
+
+                srcCol = -1;
+                continue;
             }
         }
 
@@ -175,27 +172,36 @@ namespace ChessEngine.Engine
 
             if (MovingPieceSecondary.PieceType == ChessPieceType.Rook)
             {
-                if (MovingPieceSecondary.PieceColor == ChessPieceColor.Black)
+                switch (MovingPieceSecondary.PieceColor)
                 {
-                    if (MovingPieceSecondary.SrcPosition == 7)
-                    {
-                        value += "O-O";
-                    }
-                    else if (MovingPieceSecondary.SrcPosition == 0)
-                    {
-                        value += "O-O-O";
-                    }
-                }
-                else if (MovingPieceSecondary.PieceColor == ChessPieceColor.White)
-                {
-                    if (MovingPieceSecondary.SrcPosition == 63)
-                    {
-                        value += "O-O";
-                    }
-                    else if (MovingPieceSecondary.SrcPosition == 56)
-                    {
-                        value += "O-O-O";
-                    }
+                    case ChessPieceColor.Black:
+                        {
+                            if (MovingPieceSecondary.SrcPosition == 7)
+                            {
+                                value += "O-O";
+                            }
+                            else if (MovingPieceSecondary.SrcPosition == 0)
+                            {
+                                value += "O-O-O";
+                            }
+
+                            break;
+                        }
+                    case ChessPieceColor.White:
+                        {
+                            if (MovingPieceSecondary.SrcPosition == 63)
+                            {
+                                value += "O-O";
+                            }
+                            else if (MovingPieceSecondary.SrcPosition == 56)
+                            {
+                                value += "O-O-O";
+                            }
+
+                            break;
+                        }
+                    default:
+                        throw new ArgumentOutOfRangeException("ChessPieceColor", typeof(ChessPieceColor), " is not valid");
                 }
             }
             else
@@ -208,10 +214,12 @@ namespace ChessEngine.Engine
                         value += GetColumnFromInt(srcCol);
                         value += srcRow;
                         break;
+
                     case ChessPieceType.Rook:
                         value += GetColumnFromInt(srcCol);
                         value += srcRow;
                         break;
+
                     case ChessPieceType.Pawn:
                         if (srcCol != dstCol)
                         {
@@ -249,20 +257,28 @@ namespace ChessEngine.Engine
             {
                 case 0:
                     return "a";
+
                 case 1:
                     return "b";
+
                 case 2:
                     return "c";
+
                 case 3:
                     return "d";
+
                 case 4:
                     return "e";
+
                 case 5:
                     return "f";
+
                 case 6:
                     return "g";
+
                 case 7:
                     return "h";
+
                 default:
                     return "Unknown";
             }
@@ -274,20 +290,28 @@ namespace ChessEngine.Engine
             {
                 case 'a':
                     return 0;
+
                 case 'b':
                     return 1;
+
                 case 'c':
                     return 2;
+
                 case 'd':
                     return 3;
+
                 case 'e':
                     return 4;
+
                 case 'f':
                     return 5;
+
                 case 'g':
                     return 6;
+
                 case 'h':
                     return 7;
+
                 default:
                     return -1;
             }
@@ -299,14 +323,19 @@ namespace ChessEngine.Engine
             {
                 case 'B':
                     return ChessPieceType.Bishop;
+
                 case 'K':
                     return ChessPieceType.King;
+
                 case 'N':
                     return ChessPieceType.Knight;
+
                 case 'Q':
                     return ChessPieceType.Queen;
+
                 case 'R':
                     return ChessPieceType.Rook;
+
                 default:
                     return ChessPieceType.None;
             }
@@ -330,21 +359,20 @@ namespace ChessEngine.Engine
 
                 case ChessPieceType.Rook:
                     return "R";
+
                 default:
                     return "";
             }
         }
 
         // Use this for initialization
-        void Start()
+        private void Start()
         {
-
         }
 
         // Update is called once per frame
-        void Update()
+        private void Update()
         {
-
         }
     }
 }

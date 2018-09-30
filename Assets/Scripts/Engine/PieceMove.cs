@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using System;
 
 namespace ChessEngine.Engine
 {
@@ -67,14 +66,13 @@ namespace ChessEngine.Engine
         internal static byte[] KingTotalMoves;
     }
 
-
     public class PieceMove : MonoBehaviour
     {
-
         private static byte Position(byte col, byte row)
         {
             return (byte)(col + (row * 8));
         }
+
         #region IntitiateMotionMethods
 
         internal static void InitiateChessPieceMotion()
@@ -710,7 +708,6 @@ namespace ChessEngine.Engine
                         MoveArrays.KingTotalMoves[index]++;
                     }
 
-
                     row = x;
                     col = y;
 
@@ -729,18 +726,16 @@ namespace ChessEngine.Engine
             }
         }
 
-        #endregion
+        #endregion IntitiateMotionMethods
 
         // Use this for initialization
-        void Start()
+        private void Start()
         {
-
         }
 
         // Update is called once per frame
-        void Update()
+        private void Update()
         {
-
         }
     }
 }

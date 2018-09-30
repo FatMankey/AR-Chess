@@ -1,11 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-
 
 namespace ChessEngine.Engine
 {
-
     #region Enums
 
     #region ChessPieceColor enum
@@ -16,7 +13,7 @@ namespace ChessEngine.Engine
         Black
     }
 
-    #endregion
+    #endregion ChessPieceColor enum
 
     #region ChessPieceType enum
 
@@ -31,9 +28,10 @@ namespace ChessEngine.Engine
         None
     }
 
-    #endregion
+    #endregion ChessPieceType enum
 
-    #endregion
+    #endregion Enums
+
     public class Piece : MonoBehaviour
     {
         #region Members
@@ -53,7 +51,9 @@ namespace ChessEngine.Engine
         public bool Selected;
 
         public Stack<byte> ValidMoves;
-        #endregion
+
+        #endregion Members
+
         public static string GetPieceTypeShort(ChessPieceType pieceType)
         {
             switch (pieceType)
@@ -125,7 +125,8 @@ namespace ChessEngine.Engine
             PieceActionValue = CalculatePieceActionValue(PieceType);
         }
 
-        #endregion
+        #endregion Constructors
+
         #region PrivateMethods
 
         private static short CalculatePieceValue(ChessPieceType pieceType)
@@ -135,7 +136,6 @@ namespace ChessEngine.Engine
                 case ChessPieceType.Pawn:
                     {
                         return 100;
-
                     }
                 case ChessPieceType.Knight:
                     {
@@ -166,7 +166,6 @@ namespace ChessEngine.Engine
             }
         }
 
-
         private static short CalculatePieceActionValue(ChessPieceType pieceType)
         {
             switch (pieceType)
@@ -174,7 +173,6 @@ namespace ChessEngine.Engine
                 case ChessPieceType.Pawn:
                     {
                         return 6;
-
                     }
                 case ChessPieceType.Knight:
                     {
@@ -198,6 +196,11 @@ namespace ChessEngine.Engine
                     {
                         return 1;
                     }
+
+                case ChessPieceType.None:
+                    {
+                        return 0;
+                    }
                 default:
                     {
                         return 0;
@@ -205,17 +208,16 @@ namespace ChessEngine.Engine
             }
         }
 
-        #endregion
-        // Use this for initialization
-        void Start()
-        {
+        #endregion PrivateMethods
 
+        // Use this for initialization
+        private void Start()
+        {
         }
 
         // Update is called once per frame
-        void Update()
+        private void Update()
         {
-
         }
     }
 }
