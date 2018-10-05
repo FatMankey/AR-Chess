@@ -1,14 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
-
 
 namespace ChessEngine.Engine
 {
     public class Engine : MonoBehaviour
     {
         public Board ChessBoard;
-        private Board PreviousChessBoard;
+        private Board _previousChessBoard;
         // Use this for initialization
 
         public ChessPieceColor HumanPlayer;
@@ -84,13 +82,8 @@ namespace ChessEngine.Engine
             }
 
             index = GetBoardIndex(destinationColumn, destinationRow);
-
-            if (index == ChessBoard.EnPassantPosition)
-            {
-                return true;
-            }
-
-            return false;
+            // bool converted since two return statements are redundant
+            return index == ChessBoard.EnPassantPosition;
         }
 
         public ChessPieceType GetPieceTypeAt(byte boardColumn, byte boardRow)
@@ -119,32 +112,23 @@ namespace ChessEngine.Engine
         {
             byte index = GetBoardIndex(boardColumn, boardRow);
 
-            if (ChessBoard.Squares[index].Piece == null)
-            {
-                return ChessPieceColor.White;
-            }
-            return ChessBoard.Squares[index].Piece.PieceColor;
+            return ChessBoard.Squares[index].Piece == null
+                ? ChessPieceColor.White
+                : ChessBoard.Squares[index].Piece.PieceColor;
         }
 
         public ChessPieceColor GetPieceColorAt(byte index)
         {
-            if (ChessBoard.Squares[index].Piece == null)
-            {
-                return ChessPieceColor.White;
-            }
-            return ChessBoard.Squares[index].Piece.PieceColor;
+            return ChessBoard.Squares[index].Piece == null
+                ? ChessPieceColor.White
+                : ChessBoard.Squares[index].Piece.PieceColor;
         }
 
         public bool GetChessPieceSelected(byte boardColumn, byte boardRow)
         {
             byte index = GetBoardIndex(boardColumn, boardRow);
 
-            if (ChessBoard.Squares[index].Piece == null)
-            {
-                return false;
-            }
-
-            return ChessBoard.Squares[index].Piece.Selected;
+            return ChessBoard.Squares[index].Piece != null && ChessBoard.Squares[index].Piece.Selected;
         }
 
         public byte[][] GetValidMoves(byte boardColumn, byte boardRow)
@@ -198,38 +182,44 @@ namespace ChessEngine.Engine
 
             Piece piece = ChessBoard.Squares[srcPosition].Piece;
 
-            PreviousChessBoard = new Board(ChessBoard);
-
+            _previousChessBoard = new Board(ChessBoard);
 
             Board.MovePiece(ChessBoard, srcPosition, dstPosition, ChessPieceType.Queen);
 
             PieceMoveVaidation.GenerateValidMoves(ChessBoard);
 
+            switch (piece.PieceColor)
+            {
+                //If there is a check in place, check if this is still true;
+                case ChessPieceColor.White:
+                    {
+                        if (ChessBoard.WhiteCheck)
+                        {
+                            //Invalid Move
+                            ChessBoard = new Board(_previousChessBoard);
+                            PieceMoveVaidation.GenerateValidMoves(ChessBoard);
+                            return false;
+                        }
 
-            //If there is a check in place, check if this is still true;
-            if (piece.PieceColor == ChessPieceColor.White)
-            {
-                if (ChessBoard.WhiteCheck)
-                {
-                    //Invalid Move
-                    ChessBoard = new Board(PreviousChessBoard);
-                    PieceMoveVaidation.GenerateValidMoves(ChessBoard);
-                    return false;
-                }
-            }
-            else if (piece.PieceColor == ChessPieceColor.Black)
-            {
-                if (ChessBoard.BlackCheck)
-                {
-                    //Invalid Move
-                    ChessBoard = new Board(PreviousChessBoard);
-                    PieceMoveVaidation.GenerateValidMoves(ChessBoard);
-                    return false;
-                }
+                        break;
+                    }
+                case ChessPieceColor.Black:
+                    {
+                        if (ChessBoard.BlackCheck)
+                        {
+                            //Invalid Move
+                            ChessBoard = new Board(_previousChessBoard);
+                            PieceMoveVaidation.GenerateValidMoves(ChessBoard);
+                            return false;
+                        }
+
+                        break;
+                    }
+                default:
+                    throw new ArgumentOutOfRangeException("ChessPieceColor ", " is not valid");
             }
 
             return true;
-
         }
 
         private void GenerateValidMoves()
@@ -237,11 +227,9 @@ namespace ChessEngine.Engine
             PieceMoveVaidation.GenerateValidMoves(ChessBoard);
         }
 
-        private static byte GetBoardIndex(byte BoardColumn, byte BoardRow)
+        private static byte GetBoardIndex(byte boardColumn, byte boardRow)
         {
-            return (byte)(BoardColumn + (BoardRow * 8));
+            return (byte)(boardColumn + (boardRow * 8));
         }
-
-
     }
 }

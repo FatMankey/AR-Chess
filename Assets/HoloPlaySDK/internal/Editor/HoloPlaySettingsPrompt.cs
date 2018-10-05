@@ -12,27 +12,32 @@ public class HoloPlaySettingsPrompt : EditorWindow
     // public static HoloPlaySettingsPrompt Instance { get; private set; }
     // public static bool IsOpen { get { return Instance != null; } }
 
-    class setting
+    private class setting
     {
         public string label;
         public bool on;
+
         public setting(string label, bool on)
         {
             this.label = label;
             this.on = on;
         }
     }
-    List<setting> settings;
+
+    private List<setting> settings;
+
     //last changed significantly at 0.39--show it again!
-    static string editorPrefName = "HoloPlay Proj Settings 0_41";
-    BuildTarget[] buildPlatforms = new[]
+    private static string editorPrefName = "HoloPlay Proj Settings 0_41";
+
+    private BuildTarget[] buildPlatforms = new[]
     {
-        BuildTarget.StandaloneOSXIntel,
-        BuildTarget.StandaloneOSXIntel64
+        BuildTarget.StandaloneWindows64,
+        BuildTarget.StandaloneLinux64
     };
-    GraphicsDeviceType[] graphicsAPIs = new[]
+
+    private GraphicsDeviceType[] graphicsAPIs = new[]
     {
-        GraphicsDeviceType.OpenGLCore,
+        GraphicsDeviceType.Vulkan,
         GraphicsDeviceType.Metal
     };
 
@@ -41,7 +46,7 @@ public class HoloPlaySettingsPrompt : EditorWindow
         EditorApplication.update += CheckIfPromptedYet;
     }
 
-    static void CheckIfPromptedYet()
+    private static void CheckIfPromptedYet()
     {
         if (!EditorPrefs.GetBool(editorPrefName + PlayerSettings.productName, false))
         {
@@ -50,13 +55,13 @@ public class HoloPlaySettingsPrompt : EditorWindow
         EditorApplication.update -= CheckIfPromptedYet;
     }
 
-    static void Init()
+    private static void Init()
     {
         HoloPlaySettingsPrompt window = EditorWindow.GetWindow<HoloPlaySettingsPrompt>();
         window.Show();
     }
 
-    void OnEnable()
+    private void OnEnable()
     {
         titleContent = new GUIContent("HoloPlay Settings");
 
@@ -77,7 +82,7 @@ public class HoloPlaySettingsPrompt : EditorWindow
         minSize = size;
     }
 
-    void OnGUI()
+    private void OnGUI()
     {
         EditorGUILayout.HelpBox(
             "It is recommended you change the following project settings " +

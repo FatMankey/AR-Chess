@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+
 namespace ChessEngine.Engine
 {
     public class Square : MonoBehaviour
@@ -16,6 +17,6 @@ namespace ChessEngine.Engine
             Piece = new Piece(piece);
         }
 
-        #endregion
+        #endregion Constructors
     }
 }
