@@ -357,7 +357,12 @@ ModelImporter:
     4300064: revolvedSurface16
     4300066: revolvedSurface17
     2186277476908879412: ImportLogs
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Whites
+    second: {fileID: 2100000, guid: 0bfa884a135796a45a5b0be617462c15, type: 2}
   materials:
     importMaterials: 1
     materialName: 0
