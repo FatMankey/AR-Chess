@@ -260,7 +260,7 @@ namespace HoloPlaySDK_UI
         public static EditorWindow GetMainGameView(bool dontCreate = false)
         {
             if (!dontCreate)
-                EditorApplication.ExecuteMenuItem("Window/Game");
+                EditorApplication.ExecuteMenuItem("Window/General/Game");
 
             System.Type T = System.Type.GetType("UnityEditor.GameView,UnityEditor");
             System.Reflection.MethodInfo GetMainGameView = T.GetMethod(
